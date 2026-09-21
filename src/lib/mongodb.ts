@@ -11,9 +11,21 @@ export function getMongoClient(): Promise<MongoClient> | null {
   if (!uri) return null;
 
   if (!globalWithMongo._mongoClientPromise) {
-    globalWithMongo._mongoClientPromise = new MongoClient(uri).connect();
+    // DB에 닿을 수 없을 때 페이지가 기본값(30초) 동안 멈추지 않도록 짧게 제한
+    const promise = new MongoClient(uri, {
+      serverSelectionTimeoutMS: 5_000,
+    }).connect();
+
+    // 연결 실패 시 거부된 Promise가 캐시에 남아 영구 장애가 되지 않도록 비움
+    promise.catch(() => {
+      if (globalWithMongo._mongoClientPromise === promise) {
+        globalWithMongo._mongoClientPromise = undefined;
+      }
+    });
+
+    globalWithMongo._mongoClientPromise = promise;
   }
   return globalWithMongo._mongoClientPromise;
 }
 
-export const DB_NAME = process.env.MONGODB_DB ?? "linknamu";
+export const DB_NAME = process.env.MONGODB_DB || "linknamu";

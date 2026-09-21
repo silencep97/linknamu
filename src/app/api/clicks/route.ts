@@ -10,14 +10,17 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  let body: { id?: unknown };
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "잘못된 요청" }, { status: 400 });
   }
 
-  const id = typeof body.id === "string" ? body.id : "";
+  // body가 null이거나 객체가 아닌 경우(예: JSON `null`)도 500이 아닌 400으로 처리
+  const rawId =
+    typeof body === "object" && body !== null && "id" in body ? body.id : undefined;
+  const id = typeof rawId === "string" ? rawId : "";
   if (!links.some((l) => l.id === id)) {
     return NextResponse.json({ error: "존재하지 않는 링크" }, { status: 404 });
   }
