@@ -11,11 +11,11 @@ export type Profile = {
   avatar: string;
 };
 
-// TODO: 보여주기용 더미값. 실제 프로필 내용으로 교체 예정
 export const profile: Profile = {
-  name: "김클로",
-  bio: "세계 최강 바이브코더",
-  avatar: "/avatar.svg",
+  name: "kkw-kwkim",
+  bio: "풀스택 개발자 | 요즘에는 ai 개발에 관심이 많아요",
+  // 112x112 = Profile 컴포넌트의 표시 크기(h-28 w-28). SVG 대신 PNG로 요청해 next/image에서 바로 사용
+  avatar: "https://placehold.co/112x112/orange/white.png",
 };
 
 // TODO: 보여주기용 더미 링크. 실제 URL로 교체 예정
